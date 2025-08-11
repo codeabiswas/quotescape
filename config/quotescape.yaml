@@ -1,6 +1,6 @@
 # Quote source for wallpaper. Default: "random" 
 # Options: "kindle", "random", "custom"
-source: "kindle"
+source: "random"
 
 # Wallpaper dimensions. Default: 8K (7680x4320)
 dimension:
