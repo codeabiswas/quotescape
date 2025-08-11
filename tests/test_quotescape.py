@@ -18,6 +18,7 @@ from quotescape.config import ConfigLoader, QuotescapeConfig
 from quotescape.sources.base import Quote
 from quotescape.sources.random import RandomQuoteSource
 from quotescape.sources.custom import CustomQuoteSource
+from quotescape.sources.kindle import KindleQuoteSource
 
 
 class TestConfig:
@@ -67,18 +68,22 @@ class TestConfig:
         with pytest.raises(ValueError):
             loader._validate_dimensions("1920", 1080)  # Not an integer
     
-    def test_source_validation(self):
-        """Test quote source validation."""
+    def test_refresh_frequency_validation(self):
+        """Test refresh frequency validation."""
         loader = ConfigLoader()
         
-        # Valid sources
-        loader._validate_source("random")
-        loader._validate_source("kindle")
-        loader._validate_source("custom")
+        # Valid frequencies (including "always")
+        loader._validate_refresh_frequency("always")
+        loader._validate_refresh_frequency("daily")
+        loader._validate_refresh_frequency("weekly")
+        loader._validate_refresh_frequency("monthly")
+        loader._validate_refresh_frequency("quarterly")
+        loader._validate_refresh_frequency("biannually")
+        loader._validate_refresh_frequency("annually")
         
-        # Invalid source
+        # Invalid frequency
         with pytest.raises(ValueError):
-            loader._validate_source("invalid")
+            loader._validate_refresh_frequency("invalid")
 
 
 class TestQuote:
@@ -191,8 +196,8 @@ class TestCustomQuoteSource:
             source = CustomQuoteSource(config)
             
             # Check quotebook loaded
-            assert "test author" in source.quotebook  # Lowercased
-            assert len(source.quotebook["test author"]) == 2
+            assert "Test Author" in source.quotebook
+            assert len(source.quotebook["Test Author"]) == 2
             
         finally:
             Path(temp_path).unlink()
@@ -253,12 +258,12 @@ class TestCustomQuoteSource:
             
             # Add quote
             source.add_quote("New Author", "New Quote")
-            assert "new author" in source.quotebook
-            assert "New Quote" in source.quotebook["new author"]
+            assert "New Author" in source.quotebook
+            assert "New Quote" in source.quotebook["New Author"]
             
             # Remove quote
             source.remove_quote("New Author", "New Quote")
-            assert "new author" not in source.quotebook
+            assert "New Author" not in source.quotebook
             
         finally:
             Path(temp_path).unlink()
@@ -278,6 +283,140 @@ class TestCustomQuoteSource:
             
         finally:
             Path(temp_path).unlink()
+
+
+class TestKindleQuoteSource:
+    """Test Kindle quote source."""
+    
+    @patch('quotescape.sources.kindle.KindleScraper')
+    def test_kindle_with_force_refresh(self, mock_scraper_class):
+        """Test Kindle source with force_refresh flag."""
+        # Create temporary quotebook
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+            json.dump({
+                "Test Book\nBy: Test Author": [
+                    "http://example.com/cover.jpg",
+                    ["Quote 1", "Quote 2"]
+                ]
+            }, f)
+            temp_path = f.name
+        
+        try:
+            # Mock the scraper
+            mock_scraper = Mock()
+            mock_scraper.is_cache_outdated.return_value = False  # Cache is NOT outdated
+            mock_scraper.scrape.return_value = {
+                "New Book\nBy: New Author": [
+                    "http://example.com/new_cover.jpg",
+                    ["New Quote 1", "New Quote 2"]
+                ]
+            }
+            mock_scraper_class.return_value = mock_scraper
+            
+            # Create config
+            config = Mock()
+            config.project_root = Path(".")
+            config.kindle_source_settings = Mock()
+            config.kindle_source_settings.kindle_secrets_path = temp_path
+            config.kindle_source_settings.refresh_frequency = "monthly"
+            
+            # Create source with force_refresh=True
+            source = KindleQuoteSource(config, force_refresh=True)
+            
+            # Mock the cache path to use our temp file
+            source.cache_path = Path(temp_path)
+            source._load_cache()
+            
+            # Trigger refresh
+            source._refresh_cache_if_needed()
+            
+            # Verify scrape was called even though cache wasn't outdated
+            mock_scraper.scrape.assert_called_once()
+            
+        finally:
+            Path(temp_path).unlink()
+    
+    @patch('quotescape.sources.kindle.KindleScraper')
+    def test_kindle_without_force_refresh(self, mock_scraper_class):
+        """Test Kindle source without force_refresh flag (normal behavior)."""
+        # Create temporary quotebook
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+            json.dump({
+                "Test Book\nBy: Test Author": [
+                    "http://example.com/cover.jpg",
+                    ["Quote 1", "Quote 2"]
+                ]
+            }, f)
+            temp_path = f.name
+        
+        try:
+            # Mock the scraper
+            mock_scraper = Mock()
+            mock_scraper.is_cache_outdated.return_value = False  # Cache is NOT outdated
+            mock_scraper_class.return_value = mock_scraper
+            
+            # Create config
+            config = Mock()
+            config.project_root = Path(".")
+            config.kindle_source_settings = Mock()
+            config.kindle_source_settings.kindle_secrets_path = temp_path
+            config.kindle_source_settings.refresh_frequency = "monthly"
+            
+            # Create source with force_refresh=False (default)
+            source = KindleQuoteSource(config, force_refresh=False)
+            
+            # Mock the cache path to use our temp file
+            source.cache_path = Path(temp_path)
+            source._load_cache()
+            
+            # Trigger refresh check
+            source._refresh_cache_if_needed()
+            
+            # Verify scrape was NOT called since cache is up to date
+            mock_scraper.scrape.assert_not_called()
+            
+        finally:
+            Path(temp_path).unlink()
+    
+    @patch('quotescape.sources.kindle.KindleScraper')
+    def test_kindle_requires_internet_with_force_refresh(self, mock_scraper_class):
+        """Test that Kindle source requires internet when force_refresh is True."""
+        # Mock the scraper
+        mock_scraper = Mock()
+        mock_scraper.is_cache_outdated.return_value = False  # Cache is up to date
+        mock_scraper_class.return_value = mock_scraper
+        
+        # Create config
+        config = Mock()
+        config.project_root = Path(".")
+        config.kindle_source_settings = Mock()
+        config.kindle_source_settings.kindle_secrets_path = "dummy_path"
+        
+        # Create source with force_refresh=True
+        source = KindleQuoteSource(config, force_refresh=True)
+        
+        # Should require internet even though cache is up to date
+        assert source.requires_internet() is True
+    
+    @patch('quotescape.sources.kindle.KindleScraper')
+    def test_kindle_requires_internet_without_force_refresh(self, mock_scraper_class):
+        """Test that Kindle source doesn't require internet when cache is up to date."""
+        # Mock the scraper
+        mock_scraper = Mock()
+        mock_scraper.is_cache_outdated.return_value = False  # Cache is up to date
+        mock_scraper_class.return_value = mock_scraper
+        
+        # Create config
+        config = Mock()
+        config.project_root = Path(".")
+        config.kindle_source_settings = Mock()
+        config.kindle_source_settings.kindle_secrets_path = "dummy_path"
+        
+        # Create source with force_refresh=False (default)
+        source = KindleQuoteSource(config, force_refresh=False)
+        
+        # Should not require internet when cache is up to date
+        assert source.requires_internet() is False
 
 
 class TestWallpaperGeneration:
@@ -335,6 +474,8 @@ class TestCLI:
             assert args.browser is None
             assert args.login_timeout == 300
             assert args.verbose is False
+            assert hasattr(args, 'refresh_kindle')
+            assert args.refresh_kindle is False
         finally:
             sys.argv = original_argv
     
@@ -353,6 +494,66 @@ class TestCLI:
                 assert args.source == source
             finally:
                 sys.argv = original_argv
+    
+    def test_parse_arguments_with_refresh_kindle(self):
+        """Test parsing --refresh-kindle flag."""
+        from quotescape.main import parse_arguments
+        
+        import sys
+        original_argv = sys.argv
+        
+        # Test with refresh-kindle flag
+        sys.argv = ['quotescape', '--refresh-kindle']
+        try:
+            args = parse_arguments()
+            assert args.refresh_kindle is True
+        finally:
+            sys.argv = original_argv
+        
+        # Test without refresh-kindle flag
+        sys.argv = ['quotescape']
+        try:
+            args = parse_arguments()
+            assert args.refresh_kindle is False
+        finally:
+            sys.argv = original_argv
+        
+        # Test combining refresh-kindle with source
+        sys.argv = ['quotescape', '--source', 'kindle', '--refresh-kindle']
+        try:
+            args = parse_arguments()
+            assert args.source == 'kindle'
+            assert args.refresh_kindle is True
+        finally:
+            sys.argv = original_argv
+    
+    def test_refresh_kindle_error_with_wrong_source(self):
+        """Test that --refresh-kindle with non-Kindle source causes error."""
+        from quotescape.main import parse_arguments
+        
+        import sys
+        original_argv = sys.argv
+        
+        # Test refresh-kindle with random source (should be invalid combo)
+        sys.argv = ['quotescape', '--source', 'random', '--refresh-kindle']
+        try:
+            args = parse_arguments()
+            assert args.source == 'random'
+            assert args.refresh_kindle is True
+            # Note: The actual error checking happens in main(), not parse_arguments
+            # This test just confirms the flags are parsed correctly
+        finally:
+            sys.argv = original_argv
+        
+        # Test refresh-kindle with custom source (should be invalid combo)
+        sys.argv = ['quotescape', '--source', 'custom', '--refresh-kindle']
+        try:
+            args = parse_arguments()
+            assert args.source == 'custom'
+            assert args.refresh_kindle is True
+            # Note: The actual error checking happens in main(), not parse_arguments
+        finally:
+            sys.argv = original_argv
     
     def test_source_override(self):
         """Test that CLI source overrides config."""

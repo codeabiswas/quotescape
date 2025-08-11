@@ -148,7 +148,15 @@ show_author: true
 
 # Kindle-specific settings
 kindle_source_settings:
-  refresh_frequency: "monthly"  # How often to refresh highlights
+  # Refresh frequency options:
+  # - "always": Refresh every run (never use cache)
+  # - "daily": Refresh once per day
+  # - "weekly": Refresh once per week  
+  # - "monthly": Refresh once per month (default)
+  # - "quarterly": Refresh every 3 months
+  # - "biannually": Refresh every 6 months
+  # - "annually": Refresh once per year
+  refresh_frequency: "monthly"
   show_book_cover: true         # Display book cover
   show_book_title: true         # Display book title
   kindle_secrets_path: "config_directory"  # Path to kindle_secrets.json
@@ -158,18 +166,14 @@ custom_source_settings:
   custom_quotebook_path: "config_directory"  # Path to custom_quotebook.json
 ```
 
-## Command Line Options
+### CLI Flags
 
-```bash
-quotescape [options]
-
-Options:
-  --browser {chrome,firefox,edge,safari}  Force specific browser for Kindle scraping
-  --login-timeout SECONDS                  Timeout for login (default: 300)
-  -v, --verbose                           Enable verbose logging
-  --version                               Show version information
-  -h, --help                              Show help message
-```
+- **`--browser <edge, chrome, safari, firefox>`** - Force specific browser for Kindle scraping
+- **`--login-timeout <positive_integer>`** - Seconds to wait for login completion before timeout (default is 300)
+- **`--source <random, kindle, custom>`** - Use specified source for quote
+- **`--refresh-kindle`** - Force refresh the Kindle quotebook cache regardless of refresh frequency
+- **`-v, --verbose`** - Enable detailed logging during Kindle login and scraping
+- **`-h, --help`** - Display help information, version, and available flags
 
 ## Examples
 
@@ -178,9 +182,21 @@ Options:
 python -m quotescape.main
 ```
 
+### Override source via CLI (ignores config file)
+```bash
+# Use random quotes regardless of config
+python -m quotescape.main --source random
+
+# Use Kindle highlights
+python -m quotescape.main --source kindle
+
+# Use custom quotes
+python -m quotescape.main --source custom
+```
+
 ### Use Kindle highlights with Chrome browser
 ```bash
-python -m quotescape.main --browser chrome
+python -m quotescape.main --source kindle --browser chrome
 ```
 
 ### Enable verbose logging for debugging
@@ -190,7 +206,7 @@ python -m quotescape.main -v
 
 ### Extend login timeout for slow connections
 ```bash
-python -m quotescape.main --login-timeout 600
+python -m quotescape.main --source kindle --login-timeout 600
 ```
 
 ## Project Structure

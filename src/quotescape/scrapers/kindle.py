@@ -387,11 +387,15 @@ class KindleScraper:
         if not self.cache_path.exists():
             return True
         
+        frequency = self.config.kindle_source_settings.refresh_frequency
+        
+        # Handle "always" refresh - never use cache
+        if frequency == "always":
+            return True
+        
         # Get last modified time
         mtime = datetime.fromtimestamp(self.cache_path.stat().st_mtime)
         now = datetime.now()
-        
-        frequency = self.config.kindle_source_settings.refresh_frequency
         
         # Use match/case for cleaner frequency checking (Python 3.11+)
         match frequency:

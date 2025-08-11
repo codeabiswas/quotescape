@@ -1,4 +1,4 @@
-source: "kindle"
+source: "kindle" # Options: "kindle", "random", "custom"
 
 dimension:
   width: 3840
@@ -21,7 +21,7 @@ colors:
 show_author: true
 
 kindle_source_settings:
-  refresh_frequency: "weekly"
+  refresh_frequency: "weekly" # Options: always, daily, weekly, monthly, quarterly, biannually, annually
   show_book_cover: true
   show_book_title: true
   kindle_secrets_path: "./kindle_secrets.json"

@@ -6,7 +6,7 @@
 
 ## What?
 
-An app that generates quote wallpapers and sets them as your desktop background. The quote can be random (from the Quotable API), a quote provided by you, or one of your Kindle highlights.
+An app that generates quote wallpapers and sets them as your desktop background. The quote can be random (from the Quotes Hub API), a quote provided by you, or one of your Kindle highlights.
 
 ## Why?
 
@@ -24,7 +24,7 @@ An app that generates quote wallpapers and sets them as your desktop background.
 
 ### Supported Quote Sources
 
-1. **Random** (from Quotable API) - default option
+1. **Random** (from Quotes Hub API) - default option
 2. **Kindle** (scrapes highlighted quotes from Kindle Notebook)
 3. **Custom** (user-added quotes)
 
@@ -52,12 +52,12 @@ An app that generates quote wallpapers and sets them as your desktop background.
 
 **Prerequisites**
 
-- Requires internet connection to get quote from Quotable API
+- Requires internet connection to get quote from Quotes Hub API
 
 **Happy Flow**
 
 - Install quotescape → Run `quotescape`
-- Retrieves random quote from Quotable API (no filtering, uses whatever API returns)
+- Retrieves random quote from Quotes Hub API (no filtering, uses whatever API returns)
 - Generates wallpaper with quote
 - Sets as desktop background
 
@@ -92,7 +92,7 @@ An app that generates quote wallpapers and sets them as your desktop background.
 - Compares against configured refresh frequency
 - Re-scrapes if refresh period has elapsed
 - **Default:** Monthly (1st of every month)
-- **Options:** daily, weekly, monthly, quarterly, biannually, annually
+- **Options:** always, daily, weekly, monthly, quarterly, biannually, annually
 
 **Unhappy Flow**
 
@@ -224,7 +224,7 @@ show_author: true
 # Settings specific to Kindle source
 kindle_source_settings:
   # Refresh frequency for highlights. Default: monthly
-  # Options: daily, weekly, monthly, quarterly, biannually, annually
+  # Options: always, daily, weekly, monthly, quarterly, biannually, annually
   refresh_frequency: "monthly"
   # Show book cover. Default: true
   # Falls back to default cover if retrieval fails
@@ -263,6 +263,7 @@ quotescape
 - **`--browser <edge, chrome, safari, firefox>`** - Force specific browser for Kindle scraping
 - **`--login-timeout <positive_integer>`** - Seconds to wait for login completion before timeout (default is 300)
 - **`--source <random, kindle, custom>`** - Use specified source for quote
+- **`--refresh-kindle`** - Refresh the Kindle quotebook
 - **`-v, --verbose`** - Enable detailed logging during Kindle login and scraping
 - **`-h, --help`** - Display help information, version, and available flags
 
@@ -350,7 +351,7 @@ quotescape/
 │   │   ├── config.py         # Config file handling
 │   │   ├── scrapers/         # Kindle scraping logic
 │   │   ├── generators/       # Image generation
-│   │   ├── sources/          # Quote sources (quotable, kindle, custom)
+│   │   ├── sources/          # Quote sources (random, kindle, custom)
 │   │   └── platforms/        # OS-specific wallpaper setting
 │   └── output/               # Runtime generated files
 │       ├── wallpapers/       # Generated wallpaper images

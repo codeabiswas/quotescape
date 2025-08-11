@@ -3,11 +3,12 @@
 Simple runner script for Quotescape.
 
 Usage:
-    python run_quotescape.py                    # Use config file source
-    python run_quotescape.py --source random    # Override with random quotes
-    python run_quotescape.py --source kindle    # Override with Kindle highlights
-    python run_quotescape.py --source custom    # Override with custom quotes
-    python run_quotescape.py --help            # Show all options
+    python run_quotescape.py                                    # Use config file source
+    python run_quotescape.py --source random                    # Override with random quotes
+    python run_quotescape.py --source kindle                    # Override with Kindle highlights
+    python run_quotescape.py --source custom                    # Override with custom quotes
+    python run_quotescape.py --source kindle --refresh-kindle   # Force refresh Kindle cache and generate
+    python run_quotescape.py --help                             # Show all options
 """
 
 import sys

@@ -19,7 +19,8 @@ class KindleQuoteSource(QuoteSource):
     """Quote source that uses Kindle highlights."""
     
     def __init__(self, config, browser_name: Optional[str] = None,
-                 login_timeout: int = 300, verbose: bool = False):
+                 login_timeout: int = 300, verbose: bool = False,
+                 force_refresh: bool = False):
         """
         Initialize the Kindle quote source.
         
@@ -28,16 +29,18 @@ class KindleQuoteSource(QuoteSource):
             browser_name: Force specific browser for scraping
             login_timeout: Seconds to wait for login
             verbose: Enable verbose logging
+            force_refresh: Force refresh of cache regardless of age
         """
         super().__init__(config)
         self.browser_name = browser_name
         self.login_timeout = login_timeout
         self.verbose = verbose
+        self.force_refresh = force_refresh
         
         self.cache_path = config.project_root / "src" / "output" / "cache" / "kindle_quotebook.json"
         self.quotebook = {}
         
-        # Load cached quotes if available
+        # Load cached quotes if available (even if force_refresh, we load first)
         self._load_cache()
     
     def _load_cache(self) -> None:
@@ -52,7 +55,8 @@ class KindleQuoteSource(QuoteSource):
                 self.quotebook = {}
     
     def _refresh_cache_if_needed(self) -> None:
-        """Refresh the cache if it's outdated according to refresh frequency."""
+        """Refresh the cache if it's outdated according to refresh frequency or if forced."""
+        # Create scraper instance (without force_refresh - that's handled here)
         scraper = KindleScraper(
             self.config,
             browser_name=self.browser_name,
@@ -60,18 +64,28 @@ class KindleQuoteSource(QuoteSource):
             verbose=self.verbose
         )
         
-        if scraper.is_cache_outdated():
-            logger.info("Cache is outdated, refreshing...")
+        # Check if we should refresh
+        cache_outdated = scraper.is_cache_outdated()
+        should_refresh = self.force_refresh or cache_outdated
+        
+        if should_refresh:
+            if self.force_refresh:
+                logger.info("🔄 Force refresh requested, starting Kindle scraping...")
+            else:
+                logger.info("🔄 Cache is outdated, starting Kindle scraping...")
+            
             try:
+                logger.info("Opening browser for Kindle scraping...")
                 self.quotebook = scraper.scrape()
+                logger.info(f"✅ Scraping complete! Retrieved {len(self.quotebook)} books with highlights")
             except Exception as e:
-                logger.error(f"Failed to refresh cache: {e}")
+                logger.error(f"❌ Failed to refresh cache: {e}")
                 # If scraping fails but we have cached data, use it
                 if not self.quotebook:
                     raise
-                logger.info("Using existing cache despite refresh failure")
+                logger.info("⚠️ Using existing cache despite refresh failure")
         else:
-            logger.info("Cache is up to date")
+            logger.info("✓ Cache is up to date, no refresh needed")
     
     def get_quote(self) -> Quote:
         """
@@ -174,7 +188,16 @@ class KindleQuoteSource(QuoteSource):
         Kindle source requires internet only when refreshing cache.
         
         Returns:
-            True if cache needs refresh, False if using cached data
+            True if cache needs refresh or force refresh is set, False if using cached data
         """
-        scraper = KindleScraper(self.config)
+        if self.force_refresh:
+            return True
+        
+        # Create scraper to check if cache is outdated
+        scraper = KindleScraper(
+            self.config,
+            browser_name=self.browser_name,
+            login_timeout=self.login_timeout,
+            verbose=self.verbose
+        )
         return scraper.is_cache_outdated()

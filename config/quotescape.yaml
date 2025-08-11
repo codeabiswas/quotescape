@@ -41,7 +41,8 @@ show_author: true
 # Settings specific to Kindle source
 kindle_source_settings:
   # Refresh frequency for highlights. Default: monthly
-  # Options: daily, weekly, monthly, quarterly, biannually, annually
+  # Options: always, daily, weekly, monthly, quarterly, biannually, annually
+  # "always" = refresh every time (never use cache)
   refresh_frequency: "monthly"
   # Show book cover. Default: true
   # Falls back to default cover if retrieval fails

@@ -65,6 +65,7 @@ def get_quote_source(config: QuotescapeConfig, args: argparse.Namespace) -> Quot
             cfg,
             browser_name=args.browser,
             login_timeout=args.login_timeout,
+            force_refresh=args.refresh_kindle,
             verbose=args.verbose
         )
     }
@@ -154,6 +155,14 @@ def parse_arguments() -> argparse.Namespace:
         help="Seconds to wait for login completion (default: 300)"
     )
     
+    # Force refresh Kindle cache
+    parser.add_argument(
+        "--refresh-kindle",
+        action="store_true",
+        dest="refresh_kindle",
+        help="Force refresh of Kindle highlights cache"
+    )
+    
     # Verbose logging
     parser.add_argument(
         "-v", "--verbose",
@@ -168,8 +177,9 @@ def parse_arguments() -> argparse.Namespace:
         version=f"Quotescape v{__version__}"
     )
     
-    return parser.parse_args()
-
+    args = parser.parse_args()
+    
+    return args
 
 def main() -> None:
     """Main entry point for Quotescape."""

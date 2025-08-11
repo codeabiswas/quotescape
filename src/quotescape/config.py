@@ -65,7 +65,7 @@ class ConfigLoader:
     
     # Valid options for various settings
     VALID_SOURCES = ["random", "kindle", "custom"]
-    VALID_REFRESH_FREQUENCIES = ["daily", "weekly", "monthly", "quarterly", "biannually", "annually"]
+    VALID_REFRESH_FREQUENCIES = ["always", "daily", "weekly", "monthly", "quarterly", "biannually", "annually"]
     
     # Default configuration values
     DEFAULT_CONFIG = {
