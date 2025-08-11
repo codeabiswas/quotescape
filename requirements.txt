@@ -1,0 +1,15 @@
+# Core dependencies for Quotescape
+# Requires Python 3.11
+Pillow>=10.0.0
+PyYAML>=6.0.1
+requests>=2.31.0
+selenium>=4.17.0
+beautifulsoup4>=4.12.0
+
+# Platform-specific dependencies (automatically installed as needed)
+# pyobjc-core>=10.0; sys_platform == 'darwin'
+# pyobjc-framework-Cocoa>=10.0; sys_platform == 'darwin'
+
+# Note: For development dependencies (pytest, black, flake8, mypy), 
+# install using: pip install -r requirements-dev.txt
+# or use uv with: uv sync --dev

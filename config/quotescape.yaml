@@ -1,0 +1,57 @@
+# Quote source for wallpaper. Default: "random" 
+# Options: "kindle", "random", "custom"
+source: "kindle"
+
+# Wallpaper dimensions. Default: 8K (7680x4320)
+dimension:
+  # Width (in px). Default: 7680
+  width: 7680
+  # Height (in px). Default: 4320
+  height: 4320
+
+# Dark mode. Default: true
+dark_mode: true
+
+# Color configuration for wallpaper
+# Default (dark mode): Catppuccin Mocha
+# Default (light mode): Catppuccin Latte
+colors:
+  dark:
+    # Background color. Default: #1E1E2E
+    background_color: "#1E1E2E"
+    # Quote text color. Default: #CBA6F7
+    quote_text_color: "#CBA6F7"
+    # Author text color. Default: #A6ADC8
+    author_text_color: "#A6ADC8"
+    # Book title color (Kindle only). Default: #CDD6F4
+    title_text_color: "#CDD6F4"
+  light:
+    # Background color. Default: #EFF1F5
+    background_color: "#EFF1F5"
+    # Quote text color. Default: #8839EF
+    quote_text_color: "#8839EF"
+    # Author text color. Default: #6C6F85
+    author_text_color: "#6C6F85"
+    # Book title color (Kindle only). Default: #4C4F69
+    title_text_color: "#4C4F69"
+
+# Show quote's author. Default: true
+show_author: true
+
+# Settings specific to Kindle source
+kindle_source_settings:
+  # Refresh frequency for highlights. Default: monthly
+  # Options: daily, weekly, monthly, quarterly, biannually, annually
+  refresh_frequency: "monthly"
+  # Show book cover. Default: true
+  # Falls back to default cover if retrieval fails
+  show_book_cover: true
+  # Show book title. Default: true
+  show_book_title: true
+  # Path to kindle_secrets.json. Default: same directory as config file
+  kindle_secrets_path: "config_directory"
+
+# Settings specific to Custom source
+custom_source_settings:
+  # Path to custom_quotebook.json. Default: same directory as config file
+  custom_quotebook_path: "config_directory"

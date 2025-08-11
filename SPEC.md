@@ -262,6 +262,7 @@ quotescape
 
 - **`--browser <edge, chrome, safari, firefox>`** - Force specific browser for Kindle scraping
 - **`--login-timeout <positive_integer>`** - Seconds to wait for login completion before timeout (default is 300)
+- **`--source <random, kindle, custom>`** - Use specified source for quote
 - **`-v, --verbose`** - Enable detailed logging during Kindle login and scraping
 - **`-h, --help`** - Display help information, version, and available flags
 

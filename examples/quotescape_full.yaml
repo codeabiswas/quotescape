@@ -1,0 +1,30 @@
+source: "kindle"
+
+dimension:
+  width: 3840
+  height: 2160
+
+dark_mode: false
+
+colors:
+  dark:
+    background_color: "#1E1E2E"
+    quote_text_color: "#CBA6F7"
+    author_text_color: "#A6ADC8"
+    title_text_color: "#CDD6F4"
+  light:
+    background_color: "#FFFFFF"
+    quote_text_color: "#333333"
+    author_text_color: "#666666"
+    title_text_color: "#444444"
+
+show_author: true
+
+kindle_source_settings:
+  refresh_frequency: "weekly"
+  show_book_cover: true
+  show_book_title: true
+  kindle_secrets_path: "./kindle_secrets.json"
+
+custom_source_settings:
+  custom_quotebook_path: "./my_quotes.json"
