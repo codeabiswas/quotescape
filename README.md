@@ -28,33 +28,80 @@ Generate beautiful quote wallpapers for your desktop. Quotescape creates inspiri
 
 ## Installation
 
-### Using pip
+### Using Homebrew (Recommended for macOS/Linux users)
 
 ```bash
-pip install -r requirements.txt
+# Add the tap
+brew tap codeabiswas/quotescape
+
+# Install Quotescape
+brew install quotescape
+
+# Run Quotescape
+quotescape --help
 ```
 
-### Using uv (recommended)
+This will install Quotescape with all dependencies in an isolated environment. Configuration files will be stored in:
+- Config: `/usr/local/etc/quotescape/`
+- Wallpapers: `/usr/local/var/quotescape/wallpapers/`
+
+### Manual Installation
+
+#### Using uv (Recommended for development)
 
 ```bash
+# Install uv if you haven't already
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install dependencies and run
 uv sync
+uv run python -m quotescape.main
+```
+
+#### Using pip
+
+```bash
+# Create virtual environment (recommended)
+python3.11 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run Quotescape
+python -m quotescape.main
 ```
 
 ## Quick Start
 
-### Random Quote (Default)
+### For Homebrew Installation
 
 ```bash
-# Using pip
-python -m quotescape.main
+# Generate a random quote wallpaper
+quotescape
 
+# Use custom quotes
+quotescape --source custom
+
+# Use Kindle highlights
+quotescape --source kindle
+```
+
+### For Manual Installation
+
+#### Random Quote (Default)
+
+```bash
 # Using uv
 uv run python -m quotescape.main
+
+# Using pip
+python -m quotescape.main
 ```
 
 This will fetch a random quote from the internet and set it as your wallpaper.
 
-### Custom Quotes
+#### Custom Quotes
 
 1. Create a `quotescape.yaml` configuration file:
 ```yaml
@@ -77,10 +124,14 @@ source: "custom"
 
 3. Run Quotescape:
 ```bash
+# Homebrew installation
+quotescape
+
+# Manual installation
 python -m quotescape.main
 ```
 
-### Kindle Highlights
+#### Kindle Highlights
 
 1. Create a `quotescape.yaml` configuration file:
 ```yaml
@@ -97,6 +148,10 @@ source: "kindle"
 
 3. Run Quotescape:
 ```bash
+# Homebrew installation
+quotescape
+
+# Manual installation
 python -m quotescape.main
 ```
 
@@ -106,14 +161,21 @@ python -m quotescape.main
 
 Quotescape looks for configuration files in the following locations (in order):
 
-### macOS and Linux
+### Homebrew Installation
+- `/usr/local/etc/quotescape/quotescape.yaml`
+- `/usr/local/etc/quotescape/custom_quotebook.json`
+- `/usr/local/etc/quotescape/kindle_secrets.json`
+
+### Manual Installation
+
+#### macOS and Linux
 1. `$XDG_CONFIG_HOME/quotescape/quotescape.yaml`
 2. `$XDG_CONFIG_HOME/quotescape.yaml`
 3. `$HOME/.config/quotescape/quotescape.yaml`
 4. `$HOME/quotescape.yaml`
 5. `/etc/quotescape/quotescape.yaml`
 
-### Windows
+#### Windows
 1. `%APPDATA%\quotescape\quotescape.yaml`
 
 ### Configuration Options
@@ -179,33 +241,52 @@ custom_source_settings:
 
 ### Set a random quote wallpaper
 ```bash
+# Homebrew installation
+quotescape
+
+# Manual installation
 python -m quotescape.main
 ```
 
 ### Override source via CLI (ignores config file)
 ```bash
 # Use random quotes regardless of config
-python -m quotescape.main --source random
+quotescape --source random  # Homebrew
+python -m quotescape.main --source random  # Manual
 
 # Use Kindle highlights
-python -m quotescape.main --source kindle
+quotescape --source kindle  # Homebrew
+python -m quotescape.main --source kindle  # Manual
 
 # Use custom quotes
-python -m quotescape.main --source custom
+quotescape --source custom  # Homebrew
+python -m quotescape.main --source custom  # Manual
 ```
 
 ### Use Kindle highlights with Chrome browser
 ```bash
+# Homebrew installation
+quotescape --source kindle --browser chrome
+
+# Manual installation
 python -m quotescape.main --source kindle --browser chrome
 ```
 
 ### Enable verbose logging for debugging
 ```bash
+# Homebrew installation
+quotescape -v
+
+# Manual installation
 python -m quotescape.main -v
 ```
 
 ### Extend login timeout for slow connections
 ```bash
+# Homebrew installation
+quotescape --source kindle --login-timeout 600
+
+# Manual installation
 python -m quotescape.main --source kindle --login-timeout 600
 ```
 
@@ -235,10 +316,18 @@ quotescape/
 
 ## Troubleshooting
 
-### Python Version Issues
-- **Error: "Python 3.11 or higher is required"**: Install Python 3.11 from [python.org](https://python.org) or using your package manager
-- **uv dependency errors**: Make sure you're using Python 3.11 exactly (`python --version`)
-- **pyenv users**: Run `pyenv local 3.11` in the project directory
+### Installation Issues
+
+#### Homebrew Installation
+- **Formula not found**: Make sure you've added the tap: `brew tap codeabiswas/quotescape`
+- **Python version mismatch**: Homebrew will install Python 3.11 automatically
+- **Permission issues**: Try `brew reinstall quotescape`
+
+#### Manual Installation
+- **Python Version Issues**:
+  - Install Python 3.11 from [python.org](https://python.org) or using your package manager
+  - For uv: Make sure you're using Python 3.11 exactly (`python --version`)
+  - pyenv users: Run `pyenv local 3.11` in the project directory
 
 ### Browser Issues (Kindle)
 - **Chrome/Edge/Firefox not found**: Install the browser or use `--browser` to specify an available one
@@ -259,31 +348,47 @@ quotescape/
 
 ## Development
 
-### Running with uv
-```bash
-uv sync                    # Install dependencies
-uv run python -m quotescape.main  # Run the application
-```
+### Setting Up Development Environment
 
-### Running with pip
 ```bash
+# Clone the repository
+git clone https://github.com/codeabiswas/quotescape.git
+cd quotescape
+
+# Using uv (recommended for development)
+uv sync
+uv run python -m quotescape.main
+
+# Using pip
+python3.11 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 python -m quotescape.main
 ```
 
-### Running tests
+### Running Tests
+
 ```bash
-uv run pytest              # With uv
-python -m pytest           # With pip
+# With uv
+uv run pytest
+
+# With pip
+python -m pytest
 ```
+
+### Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## License
 
 MIT License - See LICENSE file for details
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Credits
 
@@ -297,3 +402,18 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - Dynamic color matching using AI
 - Mobile app (Android/iOS)
 - GUI with system tray integration
+
+## Support
+
+If you encounter any issues or have questions:
+- Check the [Troubleshooting](#troubleshooting) section
+- Open an issue on [GitHub](https://github.com/codeabiswas/quotescape/issues)
+- Check existing issues for similar problems
+
+## Changelog (To be used in future iterations)
+
+See CHANGELOG.md for a list of changes in each version.
+
+---
+
+Made with ❤️ by [Andrei Biswas](https://github.com/codeabiswas)
