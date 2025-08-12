@@ -106,3 +106,6 @@ Desktop.ini
 # uv
 .uv/
 .python-version
+
+# Release files
+quotescape.rb
