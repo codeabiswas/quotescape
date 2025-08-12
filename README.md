@@ -161,13 +161,6 @@ python -m quotescape.main
 
 Quotescape looks for configuration files in the following locations (in order):
 
-### Homebrew Installation
-- `/usr/local/etc/quotescape/quotescape.yaml`
-- `/usr/local/etc/quotescape/custom_quotebook.json`
-- `/usr/local/etc/quotescape/kindle_secrets.json`
-
-### Manual Installation
-
 #### macOS and Linux
 1. `$XDG_CONFIG_HOME/quotescape/quotescape.yaml`
 2. `$XDG_CONFIG_HOME/quotescape.yaml`
@@ -177,6 +170,8 @@ Quotescape looks for configuration files in the following locations (in order):
 
 #### Windows
 1. `%APPDATA%\quotescape\quotescape.yaml`
+
+**Note:** To use Kindle or Custom sources, you must first create a `quotescape.yaml` configuration file and populate it with something in one of the supported directories. This file is required because it tells Quotescape (1) which source to use and (2) where to find your other configuration files. Once created, place your `kindle_secrets.json` and/or `custom_quotebook.json` files in the same directory as your `quotescape.yaml` file. Without this configuration file, these additional files cannot be located, even if they exist.
 
 ### Configuration Options
 

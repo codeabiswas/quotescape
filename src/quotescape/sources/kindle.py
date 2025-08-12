@@ -7,7 +7,7 @@ import json
 import random
 import logging
 from pathlib import Path
-from typing import Tuple, Dict, List, Optional
+from typing import Tuple, Optional
 from .base import QuoteSource, Quote
 from ..scrapers.kindle import KindleScraper
 

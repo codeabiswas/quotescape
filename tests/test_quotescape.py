@@ -8,13 +8,13 @@ import sys
 import json
 import tempfile
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 import pytest
-from quotescape.config import ConfigLoader, QuotescapeConfig
+from quotescape.config import ConfigLoader
 from quotescape.sources.base import Quote
 from quotescape.sources.random import RandomQuoteSource
 from quotescape.sources.custom import CustomQuoteSource

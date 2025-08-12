@@ -6,10 +6,9 @@ Manages loading and validation of configuration from quotescape.yaml files.
 import os
 import platform
 import re
-import sys
 import yaml
 from pathlib import Path
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Optional
 from dataclasses import dataclass, field
 
 
