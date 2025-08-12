@@ -8,8 +8,6 @@ import sys
 import platform
 import argparse
 import logging
-from pathlib import Path
-from typing import Optional
 
 from .config import ConfigLoader, QuotescapeConfig
 from .sources.base import QuoteSource
@@ -130,7 +128,7 @@ def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="quotescape",
         description="Generate beautiful quote wallpapers for your desktop",
-        epilog=f"Quotescape v{__version__} - Create inspiring wallpapers from quotes"
+        epilog=f"Quotescape v{__version__}"
     )
     
     # Source override
