@@ -117,7 +117,7 @@ sleep 3
 # Download tarball and calculate SHA256
 print_info "Downloading release tarball..."
 tarball_url="https://github.com/$GITHUB_USER/$MAIN_REPO/archive/refs/tags/v$new_version.tar.gz"
-tarball_file="/tmp/quotescape-$new_version.tar.gz"
+tarball_file="./tmp/quotescape-$new_version.tar.gz"
 
 curl -L "$tarball_url" -o "$tarball_file" 2>/dev/null || {
     print_error "Failed to download tarball. Make sure the tag is pushed to GitHub"
@@ -135,7 +135,7 @@ print_success "SHA256: $sha256"
 print_info "Generating updated formula..."
 
 formula_file="quotescape.rb"
-temp_formula="/tmp/quotescape.rb"
+temp_formula="./tmp/quotescape.rb"
 
 # Check if we have the formula template
 if [ ! -f "$formula_file" ]; then
@@ -170,7 +170,7 @@ fi
 # Create release notes
 print_info "Generating release notes template..."
 
-release_notes_file="/tmp/release_notes_v$new_version.md"
+release_notes_file="./tmp/release_notes_v$new_version.md"
 cat > "$release_notes_file" << EOF
 # Quotescape v$new_version
 
