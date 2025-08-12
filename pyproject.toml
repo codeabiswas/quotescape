@@ -1,6 +1,6 @@
 [project]
 name = "quotescape"
-version = "1.0.4"
+version = "1.0.5"
 description = "Generate beautiful quote wallpapers for your desktop"
 authors = [
     {name = "Andrei Biswas", email = "andrei.biswas@gmail.com"}
@@ -70,7 +70,7 @@ line-length = 100
 target-version = ["py311"]
 
 [tool.mypy]
-python_version = "1.0.4"
+python_version = "1.0.5"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -81,7 +81,7 @@ python_files = ["test_*.py", "*_test.py"]
 addopts = "-v --cov=quotescape --cov-report=html --cov-report=term"
 
 [tool.ruff]
-target-version = "1.0.4"
+target-version = "1.0.5"
 line-length = 100
 select = [
     "E",  # pycodestyle errors
