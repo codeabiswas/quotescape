@@ -24,7 +24,7 @@ from .platforms.linux import LinuxWallpaperSetter
 
 
 # Version information
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 
 def setup_logging(verbose: bool = False) -> None:
